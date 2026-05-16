@@ -40,16 +40,15 @@ export default function NoteEditorPage() {
   const debounceRef = useRef<NodeJS.Timeout>();
 
   useKeyboardShortcuts({
-  onSave: () => saveNote(title, content, tags),
-  onNewNote: async () => {
-    const res = await fetch("/api/notes", { method: "POST" });
-    const data = await res.json();
-    if (data.note) router.push(`/notes/${data.note.id}`);
-  },
-  onPreviewToggle: () => setPreview((p) => !p),
-});
+    onSave: () => saveNote(title, content, tags),
+    onNewNote: async () => {
+      const res = await fetch("/api/notes", { method: "POST" });
+      const data = await res.json();
+      if (data.note) router.push(`/notes/${data.note.id}`);
+    },
+    onPreviewToggle: () => setPreview((p) => !p),
+  });
 
-  // Fetch note
   useEffect(() => {
     fetch(`/api/notes/${id}`)
       .then((r) => r.json())
@@ -63,7 +62,6 @@ export default function NoteEditorPage() {
       });
   }, [id]);
 
-  // Auto-save with debounce
   const saveNote = useCallback(
     async (newTitle: string, newContent: string, newTags: string[]) => {
       setSaving(true);
@@ -94,10 +92,10 @@ export default function NoteEditorPage() {
     [saveNote]
   );
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    scheduleAutoSave(e.target.value, content, tags);
-  };
+  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  setTitle(e.target.value);
+  scheduleAutoSave(e.target.value, content, tags);
+};
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -184,8 +182,8 @@ export default function NoteEditorPage() {
 
   if (!note) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="animate-spin text-[#999]" size={20} />
+      <div className="flex items-center justify-center h-full bg-zinc-950">
+        <Loader2 className="animate-spin text-zinc-600" size={20} />
       </div>
     );
   }
@@ -221,18 +219,20 @@ export default function NoteEditorPage() {
             )}
             {generating ? "Generating..." : "AI Summary"}
           </button>
+
+          {/* Preview toggle */}
           <button
             onClick={() => setPreview(!preview)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-            preview
-             ? "bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a]"
-             : "bg-[#F0F0ED] dark:bg-[#222] hover:bg-[#E5E5E2] text-[#1a1a1a] dark:text-white"
-          }`}
-        >
-  {preview ? "Edit" : "Preview"}
-</button>
+              preview
+                ? "bg-zinc-100 text-zinc-900"
+                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+            }`}
+          >
+            {preview ? "Edit" : "Preview"}
+          </button>
 
-          {/* Share toggle */}
+          {/* Copy share link */}
           {note.isPublic && (
             <button
               onClick={copyShareLink}
@@ -242,6 +242,8 @@ export default function NoteEditorPage() {
               <Copy size={14} />
             </button>
           )}
+
+          {/* Public toggle */}
           <button
             onClick={togglePublic}
             className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-zinc-200 transition-all"
@@ -262,7 +264,7 @@ export default function NoteEditorPage() {
           {/* Delete */}
           <button
             onClick={deleteNote}
-           className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-all"
+            className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-all"
             title="Delete note"
           >
             <Trash2 size={14} />
@@ -270,14 +272,19 @@ export default function NoteEditorPage() {
         </div>
       </div>
 
-      {/* Title */}
-      <input
-        type="text"
-        value={title}
-        onChange={handleTitleChange}
-        placeholder="Untitled"
-       className="text-3xl font-semibold text-zinc-100 bg-transparent border-none outline-none placeholder:text-zinc-700 mb-4 w-full"
-      />
+      {/* Title — Fix 2: wraps instead of truncating */}
+      <textarea
+  value={title}
+  onChange={handleTitleChange}
+  placeholder="Untitled"
+  rows={1}
+  onInput={(e) => {
+    const el = e.currentTarget;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }}
+  className="text-3xl font-semibold text-zinc-100 bg-transparent border-none outline-none placeholder:text-zinc-700 mb-4 w-full resize-none overflow-hidden leading-tight"
+/>
 
       {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mb-4 min-h-[28px]">
@@ -305,37 +312,42 @@ export default function NoteEditorPage() {
         />
       </div>
 
-      <div className="w-full h-px bg-zinc-800 mb-4"/>
+      <div className="w-full h-px bg-zinc-800 mb-4" />
 
-      {/* Content */}
-{preview ? (
-  <div className="flex-1 overflow-auto prose prose-sm dark:prose-invert max-w-none text-[#1a1a1a] dark:text-[#ccc]">
-    <ReactMarkdown>{content || "*Nothing to preview*"}</ReactMarkdown>
-  </div>
-) : (
-  <textarea
-    value={content}
-    onChange={handleContentChange}
-    placeholder="Start writing... (supports Markdown)"
-    className="flex-1 text-sm text-zinc-300 bg-transparent border-none outline-none resize-none placeholder:text-zinc-700 leading-relaxed"
-  />
-)}
+      {/* Content — markdown preview or textarea */}
+      {preview ? (
+        <div className="flex-1 overflow-auto prose prose-sm prose-invert max-w-none text-zinc-300">
+          <ReactMarkdown>{content || "*Nothing to preview*"}</ReactMarkdown>
+        </div>
+      ) : (
+        <textarea
+          value={content}
+          onChange={handleContentChange}
+          placeholder="Start writing... (supports Markdown)"
+          className="flex-1 text-sm text-zinc-300 bg-transparent border-none outline-none resize-none placeholder:text-zinc-700 leading-relaxed"
+        />
+      )}
 
       {/* AI Summary Panel */}
       {note.summary && (
         <div className="mt-4 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
           <div className="flex items-center gap-1.5 mb-2">
-            <Sparkles size={13} className="text-[#999]" />
+            <Sparkles size={13} className="text-zinc-500" />
             <span className="text-xs font-medium text-zinc-500">AI Summary</span>
           </div>
-          <p className="text-sm text-zinc-300 leading-relaxed mb-3">{note.summary}</p>
+          <p className="text-sm text-zinc-300 leading-relaxed mb-3">
+            {note.summary}
+          </p>
           {note.actionItems.length > 0 && (
             <>
-              <p className="text-xs font-medium text-zinc-500 mb-1.5">Action Items</p>
+              <p className="text-xs font-medium text-zinc-500 mb-1.5">
+                Action Items
+              </p>
               <ul className="space-y-1">
                 {note.actionItems.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-zinc-400">
-                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-zinc-600 shrink-0" />
+                  // Fix 3: brighter text + lighter bullet
+                  <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
+                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-zinc-500 shrink-0" />
                     {item}
                   </li>
                 ))}

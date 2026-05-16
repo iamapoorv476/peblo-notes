@@ -4,12 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
-  LayoutDashboard,
-  FileText,
-  Archive,
-  LogOut,
-  PenSquare,
+  LayoutDashboard, FileText,
+  Archive, LogOut, PenSquare,
 } from "lucide-react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 interface SidebarProps {
   user: { name?: string | null; email?: string | null };
@@ -25,16 +23,20 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-60 h-full bg-white border-r border-[#E5E5E2] flex flex-col">
+    <aside className="w-56 h-full bg-zinc-900 border-r border-zinc-800 flex flex-col">
+
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-[#E5E5E2]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-            <PenSquare size={13} className="text-white" />
+      <div className="px-4 py-5 border-b border-zinc-800">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 flex items-center justify-center">
+              <PenSquare size={13} className="text-zinc-900" />
+            </div>
+            <span className="text-sm font-semibold text-zinc-100 tracking-tight">
+              Peblo Notes
+            </span>
           </div>
-          <span className="font-semibold text-[#1a1a1a] text-sm tracking-tight">
-            Peblo Notes
-          </span>
+          <ThemeToggle />
         </div>
       </div>
 
@@ -47,30 +49,42 @@ export default function Sidebar({ user }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
+              className={`flex items-center gap-2.5 px-3 py-2 mx-1 rounded-lg text-sm transition-all ${
                 isActive
-                  ? "bg-[#F0F0ED] text-[#1a1a1a] font-medium"
-                  : "text-[#666] hover:bg-[#F5F5F3] hover:text-[#1a1a1a]"
+                  ? "bg-zinc-800 text-zinc-100 font-medium"
+                  : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-300"
               }`}
             >
-              <Icon size={15} />
+              <Icon size={14} />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      {/* User */}
-      <div className="px-3 py-4 border-t border-[#E5E5E2]">
-        <div className="px-3 py-2 mb-1">
-          <p className="text-xs font-medium text-[#1a1a1a] truncate">{user.name}</p>
-          <p className="text-xs text-[#999] truncate">{user.email}</p>
+      {/* User Profile */}
+      <div className="px-4 pt-5 pb-4 border-t border-zinc-800">
+        <div className="flex items-center gap-3 mb-3 px-1">
+          {/* Avatar */}
+          <div className="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center shrink-0">
+            <span className="text-xs font-medium text-zinc-300">
+              {user.name?.charAt(0).toUpperCase() ?? "U"}
+            </span>
+          </div>
+          {/* Name + Email */}
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-zinc-300 truncate">
+              {user.name}
+            </p>
+           <p className="text-[11px] text-zinc-500 truncate">{user.email}</p>
+          </div>
         </div>
+
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#666] hover:bg-[#F5F5F3] hover:text-[#1a1a1a] transition-all w-full"
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800/60 transition-all"
         >
-          <LogOut size={15} />
+          <LogOut size={13} />
           Sign out
         </button>
       </div>

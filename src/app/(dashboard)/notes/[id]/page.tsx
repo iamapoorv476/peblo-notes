@@ -8,6 +8,8 @@ import {
   Archive, ArchiveRestore, Trash2, Copy, Loader2
 } from "lucide-react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface Note {
   id: string;
@@ -34,7 +36,18 @@ export default function NoteEditorPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [preview, setPreview] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout>();
+
+  useKeyboardShortcuts({
+  onSave: () => saveNote(title, content, tags),
+  onNewNote: async () => {
+    const res = await fetch("/api/notes", { method: "POST" });
+    const data = await res.json();
+    if (data.note) router.push(`/notes/${data.note.id}`);
+  },
+  onPreviewToggle: () => setPreview((p) => !p),
+});
 
   // Fetch note
   useEffect(() => {
@@ -178,12 +191,12 @@ export default function NoteEditorPage() {
   }
 
   return (
-    <div className="h-full flex flex-col max-w-3xl mx-auto px-6 py-6">
+    <div className="h-full flex flex-col max-w-3xl mx-auto px-6 py-6 bg-zinc-950">
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-6">
         <Link
           href="/notes"
-          className="flex items-center gap-1.5 text-sm text-[#999] hover:text-[#1a1a1a] transition-colors"
+          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-200 transition-colors"
         >
           <ArrowLeft size={14} />
           Back
@@ -191,7 +204,7 @@ export default function NoteEditorPage() {
 
         <div className="flex items-center gap-1.5">
           {/* Save status */}
-          <span className="text-xs text-[#bbb] mr-2">
+          <span className="text-xs text-zinc-600 mr-2">
             {saving ? "Saving..." : saved ? "Saved" : "Unsaved"}
           </span>
 
@@ -199,7 +212,7 @@ export default function NoteEditorPage() {
           <button
             onClick={generateSummary}
             disabled={generating}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F0F0ED] hover:bg-[#E5E5E2] text-[#1a1a1a] text-xs font-medium rounded-lg transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg transition-all disabled:opacity-50"
           >
             {generating ? (
               <Loader2 size={12} className="animate-spin" />
@@ -208,12 +221,22 @@ export default function NoteEditorPage() {
             )}
             {generating ? "Generating..." : "AI Summary"}
           </button>
+          <button
+            onClick={() => setPreview(!preview)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+            preview
+             ? "bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a]"
+             : "bg-[#F0F0ED] dark:bg-[#222] hover:bg-[#E5E5E2] text-[#1a1a1a] dark:text-white"
+          }`}
+        >
+  {preview ? "Edit" : "Preview"}
+</button>
 
           {/* Share toggle */}
           {note.isPublic && (
             <button
               onClick={copyShareLink}
-              className="p-1.5 rounded-lg hover:bg-[#F0F0ED] text-[#999] hover:text-[#1a1a1a] transition-all"
+              className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-zinc-200 transition-all"
               title="Copy share link"
             >
               <Copy size={14} />
@@ -221,7 +244,7 @@ export default function NoteEditorPage() {
           )}
           <button
             onClick={togglePublic}
-            className="p-1.5 rounded-lg hover:bg-[#F0F0ED] text-[#999] hover:text-[#1a1a1a] transition-all"
+            className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-zinc-200 transition-all"
             title={note.isPublic ? "Make private" : "Make public"}
           >
             {note.isPublic ? <Globe size={14} /> : <GlobeLock size={14} />}
@@ -230,7 +253,7 @@ export default function NoteEditorPage() {
           {/* Archive */}
           <button
             onClick={toggleArchive}
-            className="p-1.5 rounded-lg hover:bg-[#F0F0ED] text-[#999] hover:text-[#1a1a1a] transition-all"
+            className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-zinc-200 transition-all"
             title={note.isArchived ? "Restore" : "Archive"}
           >
             {note.isArchived ? <ArchiveRestore size={14} /> : <Archive size={14} />}
@@ -239,7 +262,7 @@ export default function NoteEditorPage() {
           {/* Delete */}
           <button
             onClick={deleteNote}
-            className="p-1.5 rounded-lg hover:bg-red-50 text-[#999] hover:text-red-500 transition-all"
+           className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-all"
             title="Delete note"
           >
             <Trash2 size={14} />
@@ -253,7 +276,7 @@ export default function NoteEditorPage() {
         value={title}
         onChange={handleTitleChange}
         placeholder="Untitled"
-        className="text-3xl font-semibold text-[#1a1a1a] bg-transparent border-none outline-none placeholder:text-[#ddd] mb-4 w-full"
+       className="text-3xl font-semibold text-zinc-100 bg-transparent border-none outline-none placeholder:text-zinc-700 mb-4 w-full"
       />
 
       {/* Tags */}
@@ -261,12 +284,12 @@ export default function NoteEditorPage() {
         {tags.map((tag) => (
           <span
             key={tag}
-            className="flex items-center gap-1 px-2.5 py-1 bg-[#F0F0ED] text-[#666] text-xs rounded-lg"
+            className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded-lg"
           >
             {tag}
             <button
               onClick={() => removeTag(tag)}
-              className="text-[#999] hover:text-[#1a1a1a] ml-0.5"
+              className="text-zinc-600 hover:text-zinc-200 ml-0.5"
             >
               ×
             </button>
@@ -278,35 +301,41 @@ export default function NoteEditorPage() {
           onChange={(e) => setTagInput(e.target.value)}
           onKeyDown={handleTagKeyDown}
           placeholder={tags.length === 0 ? "Add tags (press Enter)..." : ""}
-          className="text-xs text-[#999] bg-transparent outline-none placeholder:text-[#ccc] min-w-[120px]"
+          className="text-xs text-zinc-400 bg-transparent outline-none placeholder:text-zinc-700 min-w-[120px]"
         />
       </div>
 
-      <div className="w-full h-px bg-[#F0F0ED] mb-4" />
+      <div className="w-full h-px bg-zinc-800 mb-4"/>
 
       {/* Content */}
-      <textarea
-        value={content}
-        onChange={handleContentChange}
-        placeholder="Start writing..."
-        className="flex-1 text-sm text-[#1a1a1a] bg-transparent border-none outline-none resize-none placeholder:text-[#ccc] leading-relaxed"
-      />
+{preview ? (
+  <div className="flex-1 overflow-auto prose prose-sm dark:prose-invert max-w-none text-[#1a1a1a] dark:text-[#ccc]">
+    <ReactMarkdown>{content || "*Nothing to preview*"}</ReactMarkdown>
+  </div>
+) : (
+  <textarea
+    value={content}
+    onChange={handleContentChange}
+    placeholder="Start writing... (supports Markdown)"
+    className="flex-1 text-sm text-zinc-300 bg-transparent border-none outline-none resize-none placeholder:text-zinc-700 leading-relaxed"
+  />
+)}
 
       {/* AI Summary Panel */}
       {note.summary && (
-        <div className="mt-4 p-4 bg-[#F8F8F6] border border-[#E5E5E2] rounded-2xl">
+        <div className="mt-4 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
           <div className="flex items-center gap-1.5 mb-2">
             <Sparkles size={13} className="text-[#999]" />
-            <span className="text-xs font-medium text-[#666]">AI Summary</span>
+            <span className="text-xs font-medium text-zinc-500">AI Summary</span>
           </div>
-          <p className="text-sm text-[#444] leading-relaxed mb-3">{note.summary}</p>
+          <p className="text-sm text-zinc-300 leading-relaxed mb-3">{note.summary}</p>
           {note.actionItems.length > 0 && (
             <>
-              <p className="text-xs font-medium text-[#666] mb-1.5">Action Items</p>
+              <p className="text-xs font-medium text-zinc-500 mb-1.5">Action Items</p>
               <ul className="space-y-1">
                 {note.actionItems.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-[#666]">
-                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#999] shrink-0" />
+                  <li key={i} className="flex items-start gap-2 text-xs text-zinc-400">
+                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-zinc-600 shrink-0" />
                     {item}
                   </li>
                 ))}

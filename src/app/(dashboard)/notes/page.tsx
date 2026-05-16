@@ -70,17 +70,17 @@ export default function NotesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-[#1a1a1a]">
+         <h1 className="text-xl font-semibold text-zinc-100">
             {archived ? "Archived Notes" : "My Notes"}
           </h1>
-          <p className="text-sm text-[#999] mt-0.5">
+          <p className="text-sm text-zinc-400 mt-0.5">
             {notes.length} {notes.length === 1 ? "note" : "notes"}
           </p>
         </div>
         <button
           onClick={createNote}
           disabled={creating}
-          className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] hover:bg-[#333] text-white text-sm font-medium rounded-xl transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-100 hover:bg-white text-zinc-900 text-sm font-medium rounded-xl transition-all disabled:opacity-50"
         >
           <Plus size={15} />
           {creating ? "Creating..." : "New note"}
@@ -89,13 +89,13 @@ export default function NotesPage() {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#999]" />
+        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
         <input
           type="text"
           placeholder="Search notes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#E5E5E2] rounded-xl text-sm text-[#1a1a1a] placeholder:text-[#bbb] focus:outline-none focus:border-[#1a1a1a] transition-all"
+         className="w-full pl-9 pr-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-all"
         />
       </div>
 
@@ -109,8 +109,8 @@ export default function NotesPage() {
               onClick={() => setActiveTag(activeTag === tag ? "" : tag)}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                 activeTag === tag
-                  ? "bg-[#1a1a1a] text-white"
-                  : "bg-[#F0F0ED] text-[#666] hover:bg-[#E5E5E2]"
+                  ? "bg-zinc-100 text-zinc-900"
+                  : "bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-700 hover:text-zinc-200"
               }`}
             >
               {activeTag === tag && <X size={10} className="inline mr-1" />}
@@ -140,6 +140,10 @@ export default function NotesPage() {
           ))}
         </div>
       )}
+      {/* Keyboard shortcuts hint */}
+<div className="fixed bottom-6 right-6 text-xs text-[#ccc] dark:text-[#444] space-y-1 hidden md:block">
+  <p>⌘S · Save &nbsp; ⌘⇧N · New note &nbsp; ⌘⇧P · Preview</p>
+</div>
     </div>
   );
 }

@@ -1,13 +1,12 @@
+
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
 
@@ -21,21 +20,20 @@ export default function LoginPage() {
       redirect: false,
     });
 
-    if (result?.error) {
-      toast.error(result.error);
+    if (!result?.ok || result?.error) {
+      toast.error("Invalid email or password");
       setLoading(false);
       return;
     }
 
     toast.success("Welcome back!");
-    router.push("/dashboard");
-    router.refresh();
+    // Force hard navigation to pick up session
+    window.location.replace("/notes");
   };
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mb-10 text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#1a1a1a] mb-4">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -51,12 +49,9 @@ export default function LoginPage() {
           <p className="text-sm text-[#888] mt-1">Sign in to your workspace</p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-1.5">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-[#444] mb-1.5">Email</label>
             <input
               type="email"
               required
@@ -66,11 +61,8 @@ export default function LoginPage() {
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-white text-[#1a1a1a] text-sm placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-[#1a1a1a]/10 focus:border-[#1a1a1a] transition-all"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-1.5">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-[#444] mb-1.5">Password</label>
             <input
               type="password"
               required
@@ -80,7 +72,6 @@ export default function LoginPage() {
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-white text-[#1a1a1a] text-sm placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-[#1a1a1a]/10 focus:border-[#1a1a1a] transition-all"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}

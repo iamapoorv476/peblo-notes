@@ -24,7 +24,7 @@ export default function SignupPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      toast.error(data.error);
+      toast.error(data.error || "Something went wrong");
       setLoading(false);
       return;
     }
@@ -37,10 +37,13 @@ export default function SignupPage() {
     });
 
     if (result?.ok) {
-      toast.success("Account created! Welcome to Peblo Notes.");
+      toast.success("Welcome to Peblo Notes!");
       router.push("/dashboard");
-      router.refresh();
+    } else {
+      toast.error("Account created! Please sign in.");
+      router.push("/login");
     }
+    setLoading(false);
   };
 
   return (
@@ -96,7 +99,6 @@ export default function SignupPage() {
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-white text-[#1a1a1a] text-sm placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-[#1a1a1a]/10 focus:border-[#1a1a1a] transition-all"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}

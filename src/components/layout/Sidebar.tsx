@@ -7,7 +7,7 @@ import {
   LayoutDashboard, FileText,
   Archive, LogOut, PenSquare,
 } from "lucide-react";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+
 
 interface SidebarProps {
   user: { name?: string | null; email?: string | null };
@@ -36,7 +36,6 @@ export default function Sidebar({ user }: SidebarProps) {
               Peblo Notes
             </span>
           </div>
-          <ThemeToggle />
         </div>
       </div>
 

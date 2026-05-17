@@ -37,7 +37,7 @@ export default function NoteEditorPage() {
   const [saved, setSaved] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [preview, setPreview] = useState(false);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useKeyboardShortcuts({
     onSave: () => saveNote(title, content, tags),
@@ -84,7 +84,7 @@ export default function NoteEditorPage() {
   const scheduleAutoSave = useCallback(
     (newTitle: string, newContent: string, newTags: string[]) => {
       setSaved(false);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+     if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => {
         saveNote(newTitle, newContent, newTags);
       }, 1500);

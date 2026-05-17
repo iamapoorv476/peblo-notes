@@ -316,7 +316,7 @@ export default function NoteEditorPage() {
 
       {/* Content — markdown preview or textarea */}
       {preview ? (
-        <div className="flex-1 overflow-auto prose prose-sm prose-invert max-w-none text-zinc-300">
+        <div className="flex-1 overflow-auto max-w-none text-zinc-300 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-zinc-100 [&_h1]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-zinc-100 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-zinc-200 [&_h3]:mb-2 [&_p]:mb-3 [&_p]:leading-relaxed [&_strong]:text-zinc-100 [&_strong]:font-semibold [&_em]:text-zinc-300 [&_em]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_li]:text-zinc-300 [&_blockquote]:border-l-2 [&_blockquote]:border-zinc-600 [&_blockquote]:pl-4 [&_blockquote]:text-zinc-400 [&_blockquote]:italic [&_blockquote]:mb-3 [&_code]:bg-zinc-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_code]:text-zinc-300 [&_hr]:border-zinc-800 [&_hr]:my-4">
           <ReactMarkdown>{content || "*Nothing to preview*"}</ReactMarkdown>
         </div>
       ) : (

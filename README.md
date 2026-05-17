@@ -3,6 +3,7 @@
 A full-stack, AI-powered notes application built as part of the Peblo Full Stack Developer Challenge. Peblo Notes enables users to create, organize, and extract insights from their notes using Claude AI.
 
 🔗 **Live Demo:** https://peblo-notes-ocnw.vercel.app
+🎬 **Demo Video:** https://www.loom.com/share/7b3c97de1cb3480c84c50ae93d25a6d2
 
 ---
 
@@ -22,6 +23,28 @@ A full-stack, AI-powered notes application built as part of the Peblo Full Stack
 - **Keyboard Shortcuts** — `Ctrl+S` to save, `Ctrl+Shift+N` new note, `Ctrl+Shift+P` preview toggle
 - **Optimistic UI** — Instant feedback on delete/archive without waiting for server
 - **Auto-expanding Title** — Title textarea grows as you type
+
+---
+
+## Screenshots
+
+### Login
+![Login](/public/screenshots/login.png)
+
+### Notes Workspace
+![Notes List](/public/screenshots/notes-list.png)
+
+### AI Summary Generation
+![AI Summary](/public/screenshots/ai-summary.png)
+
+### Markdown Preview
+![Markdown Preview](/public/screenshots/markdown-preview.png)
+
+### Dashboard Insights
+![Dashboard](/public/screenshots/dashboard.png)
+
+### Public Share Page
+![Public Share](/public/screenshots/public-share.png)
 
 ---
 
